@@ -1,4 +1,4 @@
-import Controller.RealLabController;
+import controller.RealLabController;
 
 public class RealLab {
     public static void main(String[] args) {

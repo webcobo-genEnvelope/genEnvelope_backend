@@ -1,6 +1,6 @@
-package Controller;
+package controller;
 
-import Service.EnvelopeService;
+import service.EnvelopeService;
 
 public class RealLabController {
     private final EnvelopeService service = new EnvelopeService();

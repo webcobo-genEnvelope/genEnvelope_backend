@@ -1,10 +1,9 @@
-package Service;
+package service;
 
-import Domain.GeneticEnvelope;
-import Repository.EnvelopeRepository;
+import domain.GeneticEnvelope;
+import repository.EnvelopeRepository;
 import util.EnvelopeUtils;
 import util.KeyManager;
-import util.CryptoUtils;
 
 import java.security.KeyPair;
 

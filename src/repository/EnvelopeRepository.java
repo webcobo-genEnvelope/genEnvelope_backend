@@ -1,7 +1,7 @@
 // ===== repository =====
-package Repository;
+package repository;
 
-import Domain.GeneticEnvelope;
+import domain.GeneticEnvelope;
 
 public class EnvelopeRepository {
     public void save(GeneticEnvelope envelope) {
