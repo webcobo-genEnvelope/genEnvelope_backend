@@ -1,9 +1,14 @@
+package view;
+
+import controller.KeyController;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class KeyEnvelopeUI extends JFrame {
 
     private JPanel rightPanel;
+    private final KeyController keyController = new KeyController(); // Controller 연결
 
     public KeyEnvelopeUI() {
         setTitle("전자 봉투 시스템");
@@ -60,6 +65,25 @@ public class KeyEnvelopeUI extends JFrame {
 
         // === 버튼 클릭 시 오른쪽 패널 표시 ===
         btnGetKey.addActionListener(e -> rightPanel.setVisible(true));
+
+        // === 키 생성 버튼 동작 ===
+        generateBtn.addActionListener(e -> {
+            String name = nameField.getText().trim(); // 사용자는 이름 입력만 하지만 현재 로직엔 사용 안함
+            String privatePath = privateKeyField.getText().trim();
+            String publicPath = publicKeyField.getText().trim();
+
+            if (privatePath.isEmpty() || publicPath.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "모든 입력 칸을 채워주세요.", "입력 오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            boolean success = keyController.handleGenerateKeyAndSave(publicPath, privatePath);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "🔐 키 생성 및 저장 성공!", "성공", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "❌ 키 생성/저장 실패!", "오류", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
         // === 프레임에 추가 ===
         add(leftPanel);
