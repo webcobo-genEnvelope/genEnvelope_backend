@@ -34,4 +34,11 @@ public class KeyManager {
             return (PublicKey) ois.readObject();
         }
     }
+
+    public static PrivateKey loadPrivateKey(String path) throws Exception {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
+            return (PrivateKey) ois.readObject();
+        }
+    }
+
 }
