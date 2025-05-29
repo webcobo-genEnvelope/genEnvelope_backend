@@ -2,10 +2,8 @@ package util;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.*;
+import java.nio.file.*;
 
 public class CryptoUtils {
     public static byte[] hash(byte[] data) throws Exception {
@@ -20,10 +18,15 @@ public class CryptoUtils {
         return signature.sign();
     }
 
-    public static byte[] encryptFileWithAES(String filePath, SecretKey key) throws Exception {
+    public static byte[] encryptWithAES(byte[] data, SecretKey key) throws Exception {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, key);
-        byte[] fileData = Files.readAllBytes(Paths.get(filePath));
-        return cipher.doFinal(fileData);
+        return cipher.doFinal(data);
+    }
+
+    public static byte[] encryptAESKeyWithRSA(SecretKey aesKey, PublicKey publicKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        return cipher.doFinal(aesKey.getEncoded());
     }
 }

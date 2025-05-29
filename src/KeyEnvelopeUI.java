@@ -8,15 +8,15 @@ import java.awt.*;
 public class KeyEnvelopeUI extends JFrame {
 
     private JPanel rightPanel;
-    private final KeyController keyController = new KeyController(); // Controller 연결
+    private final KeyController keyController = new KeyController();
 
     public KeyEnvelopeUI() {
         setTitle("전자 봉투 시스템");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 400);
-        setLayout(new GridLayout(1, 2, 20, 0)); // 좌우 분할
+        setLayout(new GridLayout(1, 2, 20, 0));
 
-        // === 왼쪽 패널 ===
+        // 왼쪽 메뉴
         JPanel leftPanel = new JPanel();
         leftPanel.setBackground(Color.LIGHT_GRAY);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
@@ -34,12 +34,25 @@ public class KeyEnvelopeUI extends JFrame {
         leftPanel.add(btnGetEnvelope);
         leftPanel.add(Box.createVerticalGlue());
 
-        // === 오른쪽 패널 ===
+        // 오른쪽 패널
         rightPanel = new JPanel();
         rightPanel.setBackground(Color.LIGHT_GRAY);
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
-        rightPanel.setVisible(false); // 초기에는 숨김
+        rightPanel.setVisible(false);
+
+        add(leftPanel);
+        add(rightPanel);
+        setLocationRelativeTo(null);
+        setVisible(true);
+
+        // 이벤트 연결
+        btnGetKey.addActionListener(e -> showKeyPanel());
+        btnGetEnvelope.addActionListener(e -> showEnvelopePanel());
+    }
+
+    private void showKeyPanel() {
+        rightPanel.removeAll();
 
         JLabel titleLabel = new JLabel("키 생성");
         titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
@@ -63,12 +76,7 @@ public class KeyEnvelopeUI extends JFrame {
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         rightPanel.add(generateBtn);
 
-        // === 버튼 클릭 시 오른쪽 패널 표시 ===
-        btnGetKey.addActionListener(e -> rightPanel.setVisible(true));
-
-        // === 키 생성 버튼 동작 ===
         generateBtn.addActionListener(e -> {
-            String name = nameField.getText().trim(); // 사용자는 이름 입력만 하지만 현재 로직엔 사용 안함
             String privatePath = privateKeyField.getText().trim();
             String publicPath = publicKeyField.getText().trim();
 
@@ -85,11 +93,53 @@ public class KeyEnvelopeUI extends JFrame {
             }
         });
 
-        // === 프레임에 추가 ===
-        add(leftPanel);
-        add(rightPanel);
-        setLocationRelativeTo(null); // 중앙 정렬
-        setVisible(true);
+        rightPanel.setVisible(true);
+        rightPanel.revalidate();
+        rightPanel.repaint();
+    }
+
+    private void showEnvelopePanel() {
+        rightPanel.removeAll();
+
+        JLabel title = new JLabel("전자 봉투 받기");
+        title.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton checkResultBtn = new JButton("검사 결과");
+        styleButton(checkResultBtn);
+
+        JTextField statusField = new JTextField();
+        statusField.setEditable(false);
+        JTextArea contentArea = new JTextArea(3, 20);
+        contentArea.setEditable(false);
+
+        JButton downloadBtn = new JButton("다운로드");
+        styleButton(downloadBtn);
+
+        rightPanel.add(Box.createVerticalGlue());
+        rightPanel.add(title);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        rightPanel.add(checkResultBtn);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        rightPanel.add(makeLabeledField("진위 여부:", statusField));
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        rightPanel.add(makeLabeledField("내용:", contentArea)); // ⬅ JScrollPane 제거됨
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        rightPanel.add(downloadBtn);
+        rightPanel.add(Box.createVerticalGlue());
+
+        checkResultBtn.addActionListener(e -> {
+            statusField.setText("진본 확인됨");
+            contentArea.setText("DNA 검사 결과 이상 없음");
+        });
+
+        downloadBtn.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "📥 다운로드 완료!");
+        });
+
+        rightPanel.setVisible(true);
+        rightPanel.revalidate();
+        rightPanel.repaint();
     }
 
     private void styleButton(JButton button) {
@@ -100,17 +150,23 @@ public class KeyEnvelopeUI extends JFrame {
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
     }
 
-    private JPanel makeLabeledField(String labelText, JTextField textField) {
+    private JPanel makeLabeledField(String labelText, Component field) {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel label = new JLabel(labelText);
         label.setPreferredSize(new Dimension(120, 25));
-        panel.setMaximumSize(new Dimension(400, 30));
+        panel.setMaximumSize(new Dimension(400, 40)); // <-- 높이 줄임
         panel.setBackground(Color.LIGHT_GRAY);
-        textField.setBackground(new Color(220, 240, 240));
+
+        if (field instanceof JComponent) {
+            ((JComponent) field).setBackground(new Color(220, 240, 240));
+            ((JComponent) field).setPreferredSize(new Dimension(200, 25)); // <-- 고정 높이 적용
+        }
+
         panel.add(label, BorderLayout.WEST);
-        panel.add(textField, BorderLayout.CENTER);
+        panel.add(field, BorderLayout.CENTER);
         return panel;
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(KeyEnvelopeUI::new);

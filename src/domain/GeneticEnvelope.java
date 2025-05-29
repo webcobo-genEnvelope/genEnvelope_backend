@@ -1,6 +1,5 @@
 package domain;
 
-//레코드 클래스로 전환가능!!(불변객체 생성가능 유형 클래스입니닷)
 public class GeneticEnvelope {
     final String resultFilePath;
     final String markFilePath;

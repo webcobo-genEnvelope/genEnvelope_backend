@@ -10,6 +10,6 @@ public class RealLab {
         String result = "data/result.txt";
         String mark = "data/certified_mark.png";
 
-        controller.create(result, mark);
+        controller.createEnvelope();
     }
 }

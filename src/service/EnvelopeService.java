@@ -10,13 +10,14 @@ import java.security.KeyPair;
 public class EnvelopeService {
     private final EnvelopeRepository repository = new EnvelopeRepository();
 
-    public void generateEnvelope(String resultPath, String markPath) {
-        String zipPath = "data/envelope.zip";
+    public void generateEnvelope(String resultPath, String markPath, String zipPath) {
+        KeyPair labKeyPair = KeyManager.loadOrGenerateLabKeyPair();
+        KeyManager.UserPublicKey userKey = KeyManager.loadUserPublicKey();
 
-        KeyPair rsaKeyPair = KeyManager.loadOrGenerateKeyPair();
-
-        //암호화, 서명, 봉투 생성
-        EnvelopeUtils.createEnvelopeWithCrypto(resultPath, markPath, zipPath, rsaKeyPair);
+        EnvelopeUtils.createEnvelopeWithCrypto(
+                resultPath, markPath, zipPath,
+                labKeyPair.getPrivate(), userKey.getPublicKey()
+        );
 
         GeneticEnvelope envelope = new GeneticEnvelope(resultPath, markPath, zipPath);
         repository.save(envelope);
