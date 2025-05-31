@@ -4,6 +4,7 @@ import java.io.*;
 import java.security.*;
 
 public class KeyManager {
+
     public static KeyPair loadOrGenerateKeyPair(String privPath, String pubPath) {
         try {
             File priv = new File(privPath);
@@ -40,5 +41,4 @@ public class KeyManager {
             return (PrivateKey) ois.readObject();
         }
     }
-
 }

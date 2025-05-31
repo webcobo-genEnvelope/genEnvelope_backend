@@ -7,7 +7,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 
 public class KeyService {
-
     private final KeyRepository repository = new KeyRepository();
 
     public KeyPairInfo createKeyPair() throws Exception {
