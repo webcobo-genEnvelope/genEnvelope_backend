@@ -9,7 +9,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.*;
 
-public class KeyEnvelopeUI extends JFrame {
+class KeyEnvelopeUI extends JFrame {
+    private static final String RESULT_FILE = "data/result.txt";
+    private static final String SENDER_FILE = "data/sender.txt";
+
     private JPanel rightPanel;
     private final KeyController keyController = new KeyController();
     private final ReceiveController receiveController = new ReceiveController();
@@ -123,13 +126,13 @@ public class KeyEnvelopeUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "⚠️ '" + receiver + "' 키가 없습니다. 먼저 키를 발급해주세요.");
                 return;
             }
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/result.txt"))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(RESULT_FILE))) {
                 writer.write(resultContent);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this, "결과 파일 저장 실패!");
                 return;
             }
-            new RealLabController().create(receiver, "data/result.txt", markFile, zipPath, isFake);
+            new RealLabController().create(receiver, RESULT_FILE, markFile, zipPath, isFake);
             JOptionPane.showMessageDialog(this, "📦 전자봉투 전송 완료!");
         });
 
@@ -185,13 +188,13 @@ public class KeyEnvelopeUI extends JFrame {
                     if (!pub.exists() || !pri.exists()) {
                         keyController.handleGenerateKeyAndSave("data/courtpublic", "data/courtprivate");
                     }
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/result.txt"))) {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(RESULT_FILE))) {
                         writer.write(contentArea.getText().trim());
                     }
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/sender.txt"))) {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(SENDER_FILE))) {
                         writer.write(user);
                     }
-                    new RealLabController().create("court", "data/result.txt", "data/certified_mark.png", "data/court_envelope.zip", false);
+                    new RealLabController().create("court", RESULT_FILE, "data/certified_mark.png", "data/court_envelope.zip", false);
                     JOptionPane.showMessageDialog(this, "⚖️ 법원 전송 완료!");
                     showCourtReceivePanel();
                 } catch (Exception ex) {
@@ -262,7 +265,7 @@ public class KeyEnvelopeUI extends JFrame {
         contentArea.setText(result[1]);
 
         String sender = "(알 수 없음)";
-        File senderInfo = new File("data/sender.txt");
+        File senderInfo = new File(SENDER_FILE);
         if (senderInfo.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(senderInfo))) {
                 sender = reader.readLine();

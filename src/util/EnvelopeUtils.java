@@ -7,21 +7,25 @@ import java.nio.file.Paths;
 import java.security.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EnvelopeUtils {
+
+    private static final Logger LOGGER = Logger.getLogger(EnvelopeUtils.class.getName());
+
     public static void createSecureEnvelope(String resultPath, String markPath, String zipPath,
                                             String receiverPublicKeyPath, KeyPair labKeyPair,
                                             String certificatePath, boolean isFake) {
+
         try {
             SecretKey aesKey = KeyGenerator.getInstance("AES").generateKey();
             PublicKey receiverKey = KeyManager.loadPublicKey(receiverPublicKeyPath);
 
-            // 1. 결과 파일 서명
             byte[] resultBytes = Files.readAllBytes(Paths.get(resultPath));
             byte[] resultHash = CryptoUtils.hash(resultBytes);
             byte[] resultSig = CryptoUtils.sign(resultHash, labKeyPair.getPrivate());
 
-            // 2. 마크 파일 처리
             byte[] markBytes = Files.readAllBytes(Paths.get(markPath));
             byte[] markSig;
             if (isFake) {
@@ -31,52 +35,52 @@ public class EnvelopeUtils {
                 markSig = CryptoUtils.sign(markHash, labKeyPair.getPrivate());
             }
 
-            // 인증서 파일
             byte[] certBytes = Files.readAllBytes(Paths.get(certificatePath));
 
-            // 3. 임시 폴더 생성 및 파일 저장
             File tempDir = new File("data/temp_content");
-            tempDir.mkdir();
+            if (!tempDir.exists() && !tempDir.mkdirs()) {
+                throw new EnvelopeException("임시 폴더 생성 실패");
+            }
+
             Files.write(Paths.get("data/temp_content/result.txt"), resultBytes);
             Files.write(Paths.get("data/temp_content/result.sig"), resultSig);
-            Files.write(Paths.get("data/temp_content/certified_mark.png"), markBytes); // 이름 고정!
+            Files.write(Paths.get("data/temp_content/certified_mark.png"), markBytes);
             Files.write(Paths.get("data/temp_content/mark.sig"), markSig);
             Files.write(Paths.get("data/temp_content/certificate.txt"), certBytes);
 
-            // 4. AES로 압축 → 암호화
-            FileOutputStream cipherOut = new FileOutputStream("data/cipher_payload.dat");
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+            byte[] encryptedPayload;
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 ZipOutputStream zos = new ZipOutputStream(baos)) {
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try (ZipOutputStream zos = new ZipOutputStream(baos)) {
                 for (File f : tempDir.listFiles()) {
                     zos.putNextEntry(new ZipEntry(f.getName()));
                     zos.write(Files.readAllBytes(f.toPath()));
                     zos.closeEntry();
                 }
+
+                Cipher cipher = Cipher.getInstance("AES");
+                cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+                encryptedPayload = cipher.doFinal(baos.toByteArray());
+
+                try (FileOutputStream cipherOut = new FileOutputStream("data/cipher_payload.dat")) {
+                    cipherOut.write(encryptedPayload);
+                }
             }
 
-            byte[] encryptedPayload = cipher.doFinal(baos.toByteArray());
-            cipherOut.write(encryptedPayload);
-            cipherOut.close();
-
-            // 5. AES 키 RSA로 암호화
             byte[] encryptedAesKey = CryptoUtils.encryptKeyWithRSA(aesKey, receiverKey);
 
-            // 6. 최종 봉투 생성
             try (FileOutputStream fos = new FileOutputStream(zipPath);
                  ZipOutputStream zos = new ZipOutputStream(fos)) {
-                writeToZip(zos, "암호문.dat", encryptedPayload);
+                writeToZip(zos, "encrypted_data.dat", encryptedPayload);
                 writeToZip(zos, "envelope.key", encryptedAesKey);
             }
 
-            // 7. 임시 폴더 정리
             for (File f : tempDir.listFiles()) f.delete();
             tempDir.delete();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | GeneralSecurityException e) {
+            LOGGER.log(Level.SEVERE, "전자봉투 생성 중 오류 발생", e);
+            throw new EnvelopeException("전자봉투 생성 실패", e);
         }
     }
 

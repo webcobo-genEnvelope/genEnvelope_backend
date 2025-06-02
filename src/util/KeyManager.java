@@ -2,13 +2,17 @@ package util;
 
 import java.io.*;
 import java.security.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KeyManager {
 
+    private static final Logger LOGGER = Logger.getLogger(KeyManager.class.getName());
+
     public static KeyPair loadOrGenerateKeyPair(String privPath, String pubPath) {
+        File priv = new File(privPath);
+        File pub = new File(pubPath);
         try {
-            File priv = new File(privPath);
-            File pub = new File(pubPath);
             if (priv.exists() && pub.exists()) {
                 try (ObjectInputStream ois1 = new ObjectInputStream(new FileInputStream(priv));
                      ObjectInputStream ois2 = new ObjectInputStream(new FileInputStream(pub))) {
@@ -25,20 +29,27 @@ public class KeyManager {
                 }
                 return kp;
             }
-        } catch (Exception e) {
-            throw new RuntimeException("키 로딩 실패: " + e.getMessage());
+        } catch (IOException | ClassNotFoundException | NoSuchAlgorithmException e) {
+            LOGGER.log(Level.SEVERE, "Key loading or generation failed", e);
+            throw new KeyManagerException("KeyPair 처리 중 오류 발생", e);
         }
     }
 
-    public static PublicKey loadPublicKey(String path) throws Exception {
+    public static PublicKey loadPublicKey(String path) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
             return (PublicKey) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "공개키 로딩 실패", e);
+            throw new KeyManagerException("공개키 로딩 실패", e);
         }
     }
 
-    public static PrivateKey loadPrivateKey(String path) throws Exception {
+    public static PrivateKey loadPrivateKey(String path) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
             return (PrivateKey) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "개인키 로딩 실패", e);
+            throw new KeyManagerException("개인키 로딩 실패", e);
         }
     }
 }
