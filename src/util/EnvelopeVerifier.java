@@ -1,6 +1,6 @@
 package util;
 
-import domain.VerificationResult;
+import domain.VerifiResult;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -17,12 +17,11 @@ import java.util.logging.Level;
 public class EnvelopeVerifier {
 
     private static final Logger LOGGER = Logger.getLogger(EnvelopeVerifier.class.getName());
-    //// EnvelopeUtils.java
-    //writeToZip(zos, "암호문.dat", encryptedPayload); 이 부분도 변경함
+
     private static final String CIPHER_FILE_NAME = "encrypted_data.dat";
     private static final String KEY_FILE_NAME = "envelope.key";
 
-    public static VerificationResult verify(String zipPath, String privateKeyPath) {
+    public static VerifiResult verify(String zipPath, String privateKeyPath) {
         try {
             PrivateKey privateKey = KeyManager.loadPrivateKey(privateKeyPath);
 
@@ -105,7 +104,7 @@ public class EnvelopeVerifier {
                 status = "진본 확인됨";
             }
 
-            return new VerificationResult(status, resultText);
+            return new VerifiResult(status, resultText);
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "전자봉투 검증 중 오류 발생", e);

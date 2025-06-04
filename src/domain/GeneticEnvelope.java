@@ -11,7 +11,5 @@ public class GeneticEnvelope {
         this.envelopeZipPath = envelopeZipPath;
     }
 
-    public String getResultFilePath() { return resultFilePath; }
-    public String getMarkFilePath() { return markFilePath; }
     public String getEnvelopeZipPath() { return envelopeZipPath; }
 }

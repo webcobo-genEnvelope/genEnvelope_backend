@@ -7,19 +7,15 @@ import java.security.KeyPair;
 
 public class EnvelopeService {
 
-    public void generateEnvelope(String resultPath, String markPath, String receiverName, String zipPath, boolean isFake) {
+    public void genEnvelope(String resultPath, String markPath, String receiverName, String zipPath, boolean isFake) {
         try {
-            // 검사기관 키쌍 로드
-            KeyPair labKeyPair = KeyManager.loadOrGenerateKeyPair("data/labPrivate", "data/labPublic");
+            KeyPair labKeyPair = KeyManager.loadOrGenKeyPair("data/labPrivate", "data/labPublic");
 
-            // 수신자 공개키 경로
             String receiverPublicKeyPath = "data/" + receiverName + "public";
 
-            // 인증서 경로
             String certificatePath = "data/certificate.txt";
 
-            // 전자봉투 생성
-            EnvelopeUtils.createSecureEnvelope(
+            EnvelopeUtils.createSecEnv(
                     resultPath,
                     markPath,
                     zipPath,

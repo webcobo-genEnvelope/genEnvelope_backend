@@ -9,7 +9,7 @@ public class KeyManager {
 
     private static final Logger LOGGER = Logger.getLogger(KeyManager.class.getName());
 
-    public static KeyPair loadOrGenerateKeyPair(String privPath, String pubPath) {
+    public static KeyPair loadOrGenKeyPair(String privPath, String pubPath) {
         File priv = new File(privPath);
         File pub = new File(pubPath);
         try {

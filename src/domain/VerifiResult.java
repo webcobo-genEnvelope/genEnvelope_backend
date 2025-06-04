@@ -1,10 +1,10 @@
 package domain;
 
-public class VerificationResult {
+public class VerifiResult {
     private final String status;
     private final String content;
 
-    public VerificationResult(String status, String content) {
+    public VerifiResult(String status, String content) {
         this.status = status;
         this.content = content;
     }

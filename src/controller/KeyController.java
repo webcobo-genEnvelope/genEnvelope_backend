@@ -6,7 +6,7 @@ import service.KeyService;
 public class KeyController {
     private final KeyService keyService = new KeyService();
 
-    public boolean handleGenerateKeyAndSave(String publicPath, String privatePath) {
+    public boolean GenKeyAndSave(String publicPath, String privatePath) {
         try {
             KeyPairInfo keyPair = keyService.createKeyPair();
             keyService.saveKeys(keyPair, publicPath, privatePath);

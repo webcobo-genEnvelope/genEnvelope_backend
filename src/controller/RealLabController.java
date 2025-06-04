@@ -7,6 +7,6 @@ public class RealLabController {
 
     // ✅ isFake까지 포함한 최신 시그니처
     public void create(String receiverName, String resultPath, String markPath, String zipPath, boolean isFake) {
-        service.generateEnvelope(resultPath, markPath, receiverName, zipPath, isFake);
+        service.genEnvelope(resultPath, markPath, receiverName, zipPath, isFake);
     }
 }

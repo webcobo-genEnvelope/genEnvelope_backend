@@ -14,9 +14,9 @@ public class EnvelopeUtils {
 
     private static final Logger LOGGER = Logger.getLogger(EnvelopeUtils.class.getName());
 
-    public static void createSecureEnvelope(String resultPath, String markPath, String zipPath,
-                                            String receiverPublicKeyPath, KeyPair labKeyPair,
-                                            String certificatePath, boolean isFake) {
+    public static void createSecEnv(String resultPath, String markPath, String zipPath,
+                                    String receiverPublicKeyPath, KeyPair labKeyPair,
+                                    String certificatePath, boolean isFake) {
 
         try {
             SecretKey aesKey = KeyGenerator.getInstance("AES").generateKey();
@@ -67,7 +67,7 @@ public class EnvelopeUtils {
                 }
             }
 
-            byte[] encryptedAesKey = CryptoUtils.encryptKeyWithRSA(aesKey, receiverKey);
+            byte[] encryptedAesKey = CryptoUtils.encryptKeyRSA(aesKey, receiverKey);
 
             try (FileOutputStream fos = new FileOutputStream(zipPath);
                  ZipOutputStream zos = new ZipOutputStream(fos)) {

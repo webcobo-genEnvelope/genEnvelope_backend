@@ -17,7 +17,7 @@ public class KeyService {
     }
 
     public void saveKeys(KeyPairInfo keyPairInfo, String publicPath, String privatePath) throws Exception {
-        repository.saveKeyToFile(keyPairInfo.getPublicKey(), publicPath);
-        repository.saveKeyToFile(keyPairInfo.getPrivateKey(), privatePath);
+        repository.saveKeyFile(keyPairInfo.getPublicKey(), publicPath);
+        repository.saveKeyFile(keyPairInfo.getPrivateKey(), privatePath);
     }
 }

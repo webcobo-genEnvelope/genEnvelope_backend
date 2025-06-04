@@ -1,6 +1,6 @@
 package service;
 
-import domain.VerificationResult;
+import domain.VerifiResult;
 import repository.EnvelopeVerifyRepository;
 import util.EnvelopeVerifier;
 
@@ -18,7 +18,7 @@ public class EnvelopeVerificationService {
     public String[] decryptAndVerify(String username, String zipPath) {
         try {
             String privateKeyPath = "data/" + username + "private";
-            VerificationResult result = EnvelopeVerifier.verify(zipPath, privateKeyPath);
+            VerifiResult result = EnvelopeVerifier.verify(zipPath, privateKeyPath);
             repository.save(result);
             return new String[]{ result.getStatus(), result.getContent() };
         } catch (Exception e) {

@@ -87,7 +87,7 @@ class KeyEnvelopeUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "이름을 입력해주세요.");
                 return;
             }
-            boolean success = keyController.handleGenerateKeyAndSave("data/" + name + "public", "data/" + name + "private");
+            boolean success = keyController.GenKeyAndSave("data/" + name + "public", "data/" + name + "private");
             JOptionPane.showMessageDialog(this,
                     success ? "🔐 키 생성 성공!" : "❌ 실패",
                     success ? "성공" : "오류",
@@ -186,7 +186,7 @@ class KeyEnvelopeUI extends JFrame {
                     File pub = new File("data/courtpublic");
                     File pri = new File("data/courtprivate");
                     if (!pub.exists() || !pri.exists()) {
-                        keyController.handleGenerateKeyAndSave("data/courtpublic", "data/courtprivate");
+                        keyController.GenKeyAndSave("data/courtpublic", "data/courtprivate");
                     }
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter(RESULT_FILE))) {
                         writer.write(contentArea.getText().trim());

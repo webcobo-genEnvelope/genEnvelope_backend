@@ -30,7 +30,7 @@ public class CryptoUtils {
         }
     }
 
-    public static byte[] encryptKeyWithRSA(SecretKey key, PublicKey pubKey) {
+    public static byte[] encryptKeyRSA(SecretKey key, PublicKey pubKey) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, pubKey);
